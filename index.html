@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HPS FAQ ChatBot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    #chatbot {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 360px;
+      height: 500px;
+      background: #fff;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    #chat-header {
+      background-color: #1e88e5;
+      color: #fff;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 12px 12px 0 0;
+    }
+
+    #chat-content {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .user {
+      align-self: flex-start;
+      background-color: #e1f5fe;
+      color: #000;
+    }
+
+    .bot {
+      align-self: flex-end;
+      background-color: #1e88e5;
+      color: white;
+    }
+
+    .question-button {
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: #eeeeee;
+      cursor: pointer;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .question-button:hover {
+      background-color: #e0e0e0;
+    }
+
+    a {
+      color: #ffeb3b;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chatbot">
+  <div id="chat-header">HPS Virtual Assistant</div>
+  <div id="chat-content"></div>
+</div>
+
+<script>
+  const chatContent = document.getElementById("chat-content");
+
+  let qaList = [
+    {
+      question: "What is your Digital Marketing service?",
+      answer: "We offer SEO, Google Ads, and social media services. <a href='https://thehps.in/digital-marketing/' target='_blank'>Learn more</a>."
+    },
+    {
+      question: "Tell me about your Web Hosting.",
+      answer: "Our hosting is secure, fast, and affordable. <a href='https://thehps.in/web-hosting/' target='_blank'>View plans</a>."
+    },
+    {
+      question: "Do you build Custom Software?",
+      answer: "Yes! We build custom applications for businesses. <a href='https://thehps.in/custom-software-development/' target='_blank'>Explore now</a>."
+    },
+    {
+      question: "Do you offer ERP systems?",
+      answer: "We provide ERP solutions tailored to your company. <a href='https://thehps.in/erp-system/' target='_blank'>See more</a>."
+    },
+    {
+      question: "Do you provide Billing Software?",
+      answer: "Yes, we offer billing & invoicing software. <a href='https://thehps.in/billing-software/' target='_blank'>Check it out</a>."
+    },
+    {
+      question: "What services do you offer?",
+      answer: "We offer marketing, hosting, ERP, billing software, and custom apps. <a href='https://thehps.in/' target='_blank'>See all services</a>."
+    },
+    {
+      question: "How can I contact your team?",
+      answer: "You can reach us through our <a href='https://thehps.in/contact/' target='_blank'>Contact Page</a>."
+    }
+  ];
+
+  function displayMessage(content, type) {
+    const div = document.createElement("div");
+    div.className = `message ${type}`;
+    div.innerHTML = content;
+    chatContent.appendChild(div);
+    chatContent.scrollTop = chatContent.scrollHeight;
+  }
+
+  function renderQuestionButtons() {
+    // Remove old buttons if any
+    const oldButtons = document.getElementById("button-container");
+    if (oldButtons) oldButtons.remove();
+
+    if (qaList.length === 0) {
+      displayMessage("That's all! For more info, feel free to <a href='https://thehps.in/contact/' target='_blank'>contact us</a>.", "bot");
+      return;
+    }
+
+    const container = document.createElement("div");
+    container.id = "button-container";
+
+    qaList.forEach((item, index) => {
+      const btn = document.createElement("button");
+      btn.className = "question-button";
+      btn.innerText = item.question;
+      btn.onclick = () => {
+        displayMessage(item.question, "user");
+        setTimeout(() => {
+          displayMessage(item.answer, "bot");
+          qaList.splice(index, 1); // remove selected item
+          setTimeout(() => renderQuestionButtons(), 500); // refresh button list
+        }, 400);
+      };
+      container.appendChild(btn);
+    });
+
+    chatContent.appendChild(container);
+    chatContent.scrollTop = chatContent.scrollHeight;
+  }
+
+  window.onload = () => {
+    displayMessage("Hi! I’m the HPS Assistant. Please choose a question below:", "bot");
+    setTimeout(() => renderQuestionButtons(), 600);
+  };
+</script>
+
+</body>
+</html>
