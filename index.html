@@ -173,3 +173,193 @@
 
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HPS Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    /* Chatbot box fixed bottom-right */
+    .chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      background: #ffffff;
+      border: 2px solid #0078d7;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chatbot-header {
+      background: #0078d7;
+      color: #fff;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .chatbot-messages {
+      padding: 10px;
+      height: 250px;
+      overflow-y: auto;
+      font-size: 14px;
+      background: #f9f9f9;
+    }
+
+    .chatbot-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    .chatbot-input input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .chatbot-input button {
+      background: #0078d7;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .chat-message {
+      margin: 6px 0;
+      padding: 8px 12px;
+      border-radius: 12px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      background: #0078d7;
+      color: #fff;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .bot-message {
+      background: #e5e5e5;
+      color: #333;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    a {
+      color: #0078d7;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chatbot-container">
+  <div class="chatbot-header">HPS Assistant</div>
+  <div class="chatbot-messages" id="chatbotMessages"></div>
+  <div class="chatbot-input">
+    <input type="text" id="chatbotInput" placeholder="Type your message...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+  const services = [
+    "seo", "digital marketing", "ads", "google ads", "social media",
+    "web hosting", "custom software", "erp", "billing software",
+    "web development", "ui/ux", "mobile app", "dashboard"
+  ];
+
+  const serviceLink = "https://thehps.in/services.html";
+
+  function addMessage(message, sender) {
+    const messagesDiv = document.getElementById("chatbotMessages");
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("chat-message", sender === "user" ? "user-message" : "bot-message");
+    messageDiv.innerHTML = message;
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  function sendMessage() {
+    const input = document.getElementById("chatbotInput");
+    const userMessage = input.value.trim().toLowerCase();
+    if (userMessage === "") return;
+
+    addMessage(input.value, "user");
+    input.value = "";
+
+    setTimeout(() => {
+      let response = getBotResponse(userMessage);
+      addMessage(response, "bot");
+    }, 400);
+  }
+
+  function getBotResponse(message) {
+    // Greetings
+    if (["hi", "hello", "hey"].includes(message)) {
+      return "Hi there 👋 Welcome to HPS! How can I assist you today?";
+    }
+    if (message.includes("good morning")) {
+      return "Good Morning 🌞! Hope you have a productive day ahead with HPS.";
+    }
+    if (message.includes("good evening")) {
+      return "Good Evening 🌆! How can I help you with our services?";
+    }
+    for (let service of services) {
+      if (message.includes(service)) {
+        return "Yes ✅ We provide <b>" + service.toUpperCase() + "</b> services. <br><a href='" + serviceLink + "' target='_blank'>See details</a>";
+      }
+    }
+
+    for (let service of services) {
+      if (levenshteinDistance(message, service) <= 2) {
+        return "Did you mean <b>" + service.toUpperCase() + "</b>? 🤔 <br><a href='" + serviceLink + "' target='_blank'>Check Services</a>";
+      }
+    }
+
+    return "Sorry, this question is outside my scope. <br><a href='" + serviceLink + "' target='_blank'>Explore our services here</a>";
+  }
+  function levenshteinDistance(a, b) {
+    const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+    for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+    for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+        else dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+      }
+    }
+    return dp[a.length][b.length];
+  }
+
+  document.getElementById("sendBtn").addEventListener("click", sendMessage);
+  document.getElementById("chatbotInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+  });
+
+  window.onload = function() {
+    addMessage("👋 Hi! I'm HPS Assistant. Ask me about SEO, Ads, UI/UX, ERP, Hosting, Dashboard, and more.", "bot");
+  };
+</script>
+
+</body>
+</html>
